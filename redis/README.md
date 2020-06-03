@@ -1,5 +1,5 @@
 *** Usefull Commands 
-CONNECT to CLI : docker exec -it redis_redis_1 redis-cli
+CONNECT to CLI : docker exec -it redis_server redis-cli
 
 REDIS GET VALUES COMMAND :
 - if value is of type string -> GET <key>
