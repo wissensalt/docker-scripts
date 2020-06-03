@@ -3,12 +3,13 @@ services:
   mysql:
     container_name: mysql
     image: mysql:8
-    environment:
-      - MYSQL_DATABASE=test_db
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=password
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_ROOT_HOST=%
+    env_file:
+      - database.env  
     ports:
       - "3306:3306"
     restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql
+volumes:
+  mysql_data:
+
