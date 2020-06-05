@@ -2,9 +2,11 @@ version: '3'
 services:
   redis:
     image: redis:latest
-    container_name: redis_server
+    container_name: redis_latest
     ports:
       - 6379:6379
     volumes:
-      - ./config/redis.conf:/redis.conf
-    command: [ "redis-server", "/redis.conf" ]
+      - redis-data:/data
+    command: [ "redis-server", "--appendonly", "yes" ]
+volumes:
+  redis-data:
