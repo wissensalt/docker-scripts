@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+  jenkins:
+    image: jenkins:alpine
+    container_name: my-jenkins-server
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_data:/var/jenkins_home      
+    networks:
+      - jenkins_net
+volumes:
+  jenkins_data:
+networks:
+  jenkins_net:
+    
