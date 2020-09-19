@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   jenkins:
-    image: jenkins:alpine
+    image: jenkins/jenkins:lts
     container_name: my-jenkins-server
     ports:
       - "8080:8080"
@@ -11,6 +11,9 @@ services:
       - jenkins_data:/var/jenkins_home      
     networks:
       - jenkins_net
+    environment:      
+      - "JAVA_OPTS=${JAVA_OPTS}"
+      - "JENKINS_OPTS= ${JENKINS_OPTS}"
 volumes:
   jenkins_data:
 networks:
