@@ -1,0 +1,22 @@
+version: '3'
+services:
+  app:
+    build: './app'
+    container_name: app-golang
+    ports:
+      - 8081:8081
+    depends_on:
+      - db
+    networks:
+      - app-golang-network
+  db:
+    build: './postgresql'
+    container_name: test-postgresql
+    ports:
+      - 5432:5432
+    networks:
+      - app-golang-network
+
+networks:
+  app-golang-network:
+    driver: bridge
