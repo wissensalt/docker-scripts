@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  logstash_engine:
+    ports:
+      - 5000:5000
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ${HOME}/logstash:/logstash
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
