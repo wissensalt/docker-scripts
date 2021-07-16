@@ -5,11 +5,23 @@ CREATE TABLE test
     code  varchar(50),
     value varchar(100)
 );
+
+CREATE TABLE test_2
+(
+    id    bigserial not null primary key,
+    code  varchar(50),
+    value varchar(100)
+);
+
 -- GENERATE DATA
 insert into test(code, value)
 SELECT generate_series(1, 10000) AS code, md5(random()::text) AS value;
+insert into test2(code, value)
+SELECT generate_series(1, 10000) AS code, md5(random()::text) AS value;
+
 -- CHECK DATA ==> 10000
 select count(1) from test;
+select count(1) from test_2;
 
 -- OUTPUT DB
 CREATE TABLE test
@@ -19,5 +31,13 @@ CREATE TABLE test
     value varchar(100)
 );
 
+CREATE TABLE test_2
+(
+    id    bigserial not null primary key,
+    code  varchar(50),
+    value varchar(100)
+);
+
 -- CHECK DATA AFTER FINISH MIGRATION==> 10000
 select count(1) from test;
+select count(1) from test_2;
