@@ -8,8 +8,9 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ${HOME}/logstash:/logstash
-    networks:
-      - internal
+    extra_hosts:
+      - "localmachine:192.168.160.1"
+  
 
 networks:
   internal:

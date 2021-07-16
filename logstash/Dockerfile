@@ -1,5 +1,5 @@
 FROM docker.elastic.co/logstash/logstash:7.3.2
-MAINTAINER <wissensalt@gmail.com> Wissensalt
+LABEL com.wissensalt="wissensalt@gmail.com"
 
 # install deps
 RUN /usr/share/logstash/bin/logstash-plugin install logstash-input-jdbc
