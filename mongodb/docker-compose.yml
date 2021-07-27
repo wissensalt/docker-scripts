@@ -1,11 +1,11 @@
-version: '3'
+version: '3.8'
 services:
   mongodb-server:
     build: .
     image: mongodb-server
     container_name: mongodb-server
     volumes: 
-      - /Users/moka/docker-volumes/mongodb/data:/data/db
+      - ~/docker-volumes/mongodb/data:/data/db
     ports:
       - 27017:27017
     environment:
