@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  mongodb-server:
+    build: .
+    image: mongodb-server
+    container_name: mongodb-server-migration  
+    ports:
+      - 27017:27017
