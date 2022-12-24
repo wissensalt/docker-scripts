@@ -1,0 +1,32 @@
+{
+  "settings": {
+    "number_of_shards": 1
+  },
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "id": {
+          "type": "long"
+        },
+        "created_at": {
+          "type": "date"
+        },
+        "updated_at": {
+          "type": "date"
+        },
+        "expired_date": {
+          "type": "date"
+        },
+        "expired_date_type": {
+          "type": "text"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "stock_card_detail_id": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

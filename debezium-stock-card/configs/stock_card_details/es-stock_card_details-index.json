@@ -1,0 +1,74 @@
+{
+  "settings": {
+    "number_of_shards": 1
+  },
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "id": {
+          "type": "long"
+        },
+        "created_at": {
+          "type": "date"
+        },
+        "updated_at": {
+          "type": "date"
+        },
+        "item_id": {
+          "type": "integer"
+        },
+        "entry_unit": {
+          "type": "integer"
+        },
+        "entry_description": {
+          "type": "text"
+        },
+        "out_unit": {
+          "type": "integer"
+        },
+        "out_description": {
+          "type": "text"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "expired_date": {
+          "type": "date"
+        },
+        "batch_number": {
+          "type": "text"
+        },
+        "description": {
+          "type": "text"
+        },
+        "pos_outlet_id": {
+          "type": "integer"
+        },
+        "id_tbl": {
+          "type": "text"
+        },
+        "type": {
+          "type": "text"
+        },
+        "liph_date": {
+          "type": "date"
+        },
+        "stock_date": {
+          "type": "date"
+        },
+        "transaction_type": {
+          "type": "text"
+        },
+        "transaction_number": {
+          "type": "text"
+        },
+        "source_name": {
+          "type": "text"
+        },
+        "source_id": {
+          "type": "long"
+        }
+      }
+    }
+  }
+}
