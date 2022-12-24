@@ -1,17 +1,40 @@
-version: "3.8"
-services:
-  logstash_engine:
-    ports:
-      - 5000:5000
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - ${HOME}/logstash:/logstash
-    extra_hosts:
-      - "localmachine:192.168.1.11"
-  
+version: '3.9'
 
-networks:
-  internal:
-    driver: bridge
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: test_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pgadmin  
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.0  
+    restart: always
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    depends_on:
+      - postgres
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=127.0.0.1
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - http.cors.enabled=true
+      - http.cors.allow-origin="http://localhost:8080"
+  # logstash:
+  #   build: 
+  #     context: .      
+  #   container_name: logstash 
+  #   ports:
+  #     - "9600:9600"
+  #     - "5044:5044"
+  #   depends_on:
+  #     - postgres
+  #   environment:
+  #     LS_JAVA_OPTS: "-Xmx256m -Xms256m"        
