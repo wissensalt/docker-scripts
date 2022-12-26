@@ -6,15 +6,10 @@
     "topics": "public.expired_date_details",
     "connection.url": "http://elasticsearch:9200",
 
-    "type.name": "_doc",
-    "key.converter": "io.confluent.connect.avro.AvroConverter",
-    "value.converter": "io.confluent.connect.avro.AvroConverter",
-    "key.converter.schema.registry.url": "http://schema-registry:8081",
-    "value.converter.schema.registry.url": "http://schema-registry:8081",
-    "value.converter.schemas.enable": "false",
+    "type.name": "_doc",    
     "schema.ignore": "true",
     "key.ignore": "false",
-    "behavior.on.null.values": "ignore",    
+    "behavior.on.null.values": "ignore",
 
     "transforms": "unwrap,key,TimestampConverterCreatedAt,TimestampConverterUpdatedAt,TimestampConverterExpiredDate",
 
@@ -26,14 +21,17 @@
 
     "transforms.TimestampConverterCreatedAt.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
     "transforms.TimestampConverterCreatedAt.format": "yyyy-MM-dd HH:mm:ss.SSSSSS",
-    "transforms.TimestampConverterCreatedAt.target.type": "created_at",
+    "transforms.TimestampConverterCreatedAt.target.type": "string",
+    "transforms.TimestampConverterCreatedAt.field": "created_at",
 
     "transforms.TimestampConverterUpdatedAt.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
     "transforms.TimestampConverterUpdatedAt.format": "yyyy-MM-dd HH:mm:ss.SSSSSS",
-    "transforms.TimestampConverterUpdatedAt.target.type": "updated_at",
+    "transforms.TimestampConverterUpdatedAt.target.type": "string",
+    "transforms.TimestampConverterUpdatedAt.field": "updated_at",
 
     "transforms.TimestampConverterExpiredDate.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
     "transforms.TimestampConverterExpiredDate.format": "yyyy-MM-dd",
-    "transforms.TimestampConverterExpiredDate.target.type": "expired_date"
+    "transforms.TimestampConverterExpiredDate.target.type": "string",
+    "transforms.TimestampConverterExpiredDate.field": "expired_date"
   }
 }
