@@ -16,11 +16,24 @@
     "key.ignore": "false",
     "behavior.on.null.values": "ignore",    
 
-    "transforms": "unwrap,key",
+    "transforms": "unwrap,key,TimestampConverterCreatedAt,TimestampConverterUpdatedAt,TimestampConverterExpiredDate",
+
     "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
     "transforms.key.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
     "transforms.key.field": "id",
     "transforms.unwrap.drop.tombstones": "false",
-    "transforms.unwrap.drop.deletes": "false"
+    "transforms.unwrap.drop.deletes": "false",
+
+    "transforms.TimestampConverterCreatedAt.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+    "transforms.TimestampConverterCreatedAt.format": "yyyy-MM-dd HH:mm:ss.SSSSSS",
+    "transforms.TimestampConverterCreatedAt.target.type": "created_at",
+
+    "transforms.TimestampConverterUpdatedAt.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+    "transforms.TimestampConverterUpdatedAt.format": "yyyy-MM-dd HH:mm:ss.SSSSSS",
+    "transforms.TimestampConverterUpdatedAt.target.type": "updated_at",
+
+    "transforms.TimestampConverterExpiredDate.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+    "transforms.TimestampConverterExpiredDate.format": "yyyy-MM-dd",
+    "transforms.TimestampConverterExpiredDate.target.type": "expired_date"
   }
 }

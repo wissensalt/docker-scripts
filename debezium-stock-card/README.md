@@ -70,6 +70,15 @@ docker-compose exec kafka /kafka/bin/kafka-topics.sh --bootstrap-server kafka:90
 curl -H "Accept:application/json" http://localhost:9200/public.stock_card_details/_search?pretty
 ```
 
+# Watch Message via console consumer
+bin/kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic public.stock_card_details --from-beginning
+
+# List Kafka Topics
+bin/kafka-topics.sh --list --bootstrap-server kafka:9092
+
+# Delete Kafka Topics
+bin/kafka-topics.sh --bootstrap-server kafka:9092 --delete --topic public.stock_card_details
+
 ```sh
 # Watch messages from debezium topic as Binary
 docker-compose exec kafka /kafka/bin/kafka-console-consumer.sh \
@@ -79,18 +88,18 @@ docker-compose exec kafka /kafka/bin/kafka-console-consumer.sh \
     --topic public.stock_card_details
 
 # Watch messages from debezium topic as Converted Avro to Json
-docker run -it --rm --name avro-consumer --network=debezium-postgresql-elasticsearch_default \
+docker run -it --rm --name avro-consumer --network=debezium-stock-card_default \
     --link cdc_zookeeper \
     --link cdc_kafka \
     --link cdc_postgres \
     --link cdc_schema_registry \
-    debezium/connect:0.10 \
+    debezium/connect:1.8.1.Final \
     /kafka/bin/kafka-console-consumer.sh \
       --bootstrap-server kafka:9092 \
       --property print.key=true \
       --formatter io.confluent.kafka.formatter.AvroMessageFormatter \
       --property schema.registry.url=http://schema-registry:8081 \
-      --topic cdc.public.stock_card_details
+      --topic public.stock_card_details
 
 # Terminate all docker instances
 sh shutdown.sh

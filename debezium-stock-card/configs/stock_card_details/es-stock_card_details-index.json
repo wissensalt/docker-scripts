@@ -9,10 +9,12 @@
           "type": "long"
         },
         "created_at": {
-          "type": "date"
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"
         },
         "updated_at": {
-          "type": "date"
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"
         },
         "item_id": {
           "type": "integer"
@@ -33,7 +35,8 @@
           "type": "integer"
         },
         "expired_date": {
-          "type": "date"
+          "type": "date",
+          "format": "yyyy-MM-dd"
         },
         "batch_number": {
           "type": "text"
@@ -51,10 +54,12 @@
           "type": "text"
         },
         "liph_date": {
-          "type": "date"
+          "type": "date",
+          "format": "yyyy-MM-dd"
         },
         "stock_date": {
-          "type": "date"
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"
         },
         "transaction_type": {
           "type": "text"

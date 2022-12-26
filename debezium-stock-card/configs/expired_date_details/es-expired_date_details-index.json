@@ -9,13 +9,16 @@
           "type": "long"
         },
         "created_at": {
-          "type": "date"
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"
         },
         "updated_at": {
-          "type": "date"
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"
         },
         "expired_date": {
-          "type": "date"
+          "type": "date",
+          "format": "yyyy-MM-dd"
         },
         "expired_date_type": {
           "type": "text"
