@@ -5,7 +5,7 @@
 - Docker
 - Postgresql
 - Zookeeper
-- Schema Registry (Avro)
+- ~~Schema Registry (Avro)~~ (There is timestamp issue when using Avro)
 - Kafka
 - Debezium
 - Elasticsearch
@@ -71,13 +71,19 @@ curl -H "Accept:application/json" http://localhost:9200/public.stock_card_detail
 ```
 
 # Watch Message via console consumer
+```sh
 bin/kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic public.stock_card_details --from-beginning
+```
 
 # List Kafka Topics
+```sh
 bin/kafka-topics.sh --list --bootstrap-server kafka:9092
+```
 
 # Delete Kafka Topics
+```sh
 bin/kafka-topics.sh --bootstrap-server kafka:9092 --delete --topic public.stock_card_details
+```
 
 ```sh
 # Watch messages from debezium topic as Binary
