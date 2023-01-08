@@ -91,7 +91,7 @@ docker-compose exec kafka /kafka/bin/kafka-console-consumer.sh \
     --bootstrap-server kafka:9092 \
     --from-beginning \
     --property print.key=true \
-    --topic public.stock_card_details
+    --topic public.expired_date_details
 
 # Watch messages from debezium topic as Converted Avro to Json
 docker run -it --rm --name avro-consumer --network=debezium-stock-card_default \
