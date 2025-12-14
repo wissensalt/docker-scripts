@@ -6,3 +6,4 @@ rnd/docker-copy/docker-copy-command/.gitignore
 rnd/docker-copy/docker-copy-command/.mvn/
 rnd/docker-copy/docker-copy-command/mvnw
 rnd/docker-copy/docker-copy-command/mvnw.cmd
+**/.DS_Store
