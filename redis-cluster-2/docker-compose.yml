@@ -1,0 +1,98 @@
+version: '3.9'
+
+services:
+  redis-node-1:
+    image: redis:6.2-alpine
+    ports:
+      - "7000:6379"
+    networks:
+      redis-cluster-network:
+        ipv4_address: 172.128.0.1
+    hostname: redis-node-1
+    volumes:
+      - ./7000:/redis
+    command: redis-server /redis/redis.conf
+    
+  redis-node-2:
+    image: redis:6.2-alpine
+    ports:
+      - "7001:6379"
+    networks:
+      redis-cluster-network:
+        ipv4_address: 172.128.0.2
+    hostname: redis-node-2
+    volumes:
+      - ./7001:/redis
+    command: redis-server /redis/redis.conf
+
+  redis-node-3:
+    image: redis:6.2-alpine
+    ports:
+      - "7002:6379"
+    networks:
+      redis-cluster-network:
+        ipv4_address: 172.128.0.3
+    hostname: redis-node-3
+    volumes:
+      - ./7002:/redis
+    command: redis-server /redis/redis.conf
+  
+  redis-node-4:
+    image: redis:6.2-alpine
+    ports:
+      - "7003:6379"
+    networks:
+      redis-cluster-network:
+        ipv4_address: 172.128.0.4
+    hostname: redis-node-4
+    volumes:
+      - ./7003:/redis
+    command: redis-server /redis/redis.conf
+
+  redis-node-5:
+    image: redis:6.2-alpine
+    ports:
+      - "7004:6379"
+    networks:
+      redis-cluster-network:
+        ipv4_address: 172.128.0.5
+    hostname: redis-node-5
+    volumes:
+      - ./7004:/redis
+    command: redis-server /redis/redis.conf
+  
+  redis-node-6:
+    image: redis:6.2-alpine
+    ports:
+      - "7005:6379"
+    networks:
+      redis-cluster-network:
+        ipv4_address: 172.128.0.6
+    hostname: redis-node-6
+    volumes:
+      - ./7005:/redis
+    command: redis-server /redis/redis.conf
+
+  redis-cluster-creator:
+    image: redis:6.2-alpine
+    ports:
+      - "6999:6999"
+    networks:
+      redis-cluster-network:
+        ipv4_address: 172.128.0.7
+    command: redis-cli -a password -h 172.128.0.2 -p 7001 --cluster create 172.128.0.2:6379 172.128.0.3:6379 172.128.0.4:6379 172.128.0.5:6379 172.128.0.6:6379 --cluster-replicas 1 --cluster-yes
+    depends_on:
+      - redis-node-1
+      - redis-node-2
+      - redis-node-3
+      - redis-node-4
+      - redis-node-5
+      - redis-node-6
+
+networks:
+  redis-cluster-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.128.0.0/16
+          gateway: 172.128.0.1

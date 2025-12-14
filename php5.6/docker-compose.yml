@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  php56-apache:
+    build: .
+    container_name: php56-web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+    restart: unless-stopped
