@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  redis-1:
+    image: redis:7.2-alpine
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis-1.conf:/usr/local/etc/redis/redis.conf
+      - redis-1-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - redis-cluster-net
+
+  redis-2:
+    image: redis:7.2-alpine
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis-2.conf:/usr/local/etc/redis/redis.conf
+      - redis-2-data:/data
+    ports:
+      - "6380:6379"
+    networks:
+      - redis-cluster-net
+
+  redis-3:
+    image: redis:7.2-alpine
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis-3.conf:/usr/local/etc/redis/redis.conf
+      - redis-3-data:/data
+    ports:
+      - "6381:6379"
+    networks:
+      - redis-cluster-net
+
+  redis-cluster-init:
+    image: redis:7.2-alpine
+    depends_on:
+      - redis-1
+      - redis-2
+      - redis-3
+    volumes:
+      - ./cluster-init.sh:/cluster-init.sh
+    entrypoint: sh /cluster-init.sh
+    networks:
+      - redis-cluster-net
+
+volumes:
+  redis-1-data:
+  redis-2-data:
+  redis-3-data:
+
+networks:
+  redis-cluster-net:
+    driver: bridge

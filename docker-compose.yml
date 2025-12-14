@@ -1,0 +1,17 @@
+services:
+  redis-cluster:
+    container_name: redis-cluster
+    image: docker.io/bitnami/redis-cluster:7.4.1
+    ports:
+      - "7777:6379"
+    volumes:
+      - ./redis-cluster-data:/bitnami/redis/data
+    environment:
+      - 'REDIS_PASSWORD=password'
+      - 'REDISCLI_AUTH=password'
+      - 'REDIS_CLUSTER_REPLICAS=1'
+      - 'REDIS_NODES=127.0.0.1 127.0.0.1 127.0.0.1 127.0.0.1 127.0.0.1 127.0.0.1'
+      - 'REDIS_CLUSTER_ANNOUNCE_PORT=7777'
+      - 'REDIS_CLUSTER_CREATOR=yes'
+      - 'REDIS_CLUSTER_DYNAMIC_IPS=no'
+      - 'REDIS_CLUSTER_ANNOUNCE_IP=127.0.0.1'

@@ -1,0 +1,36 @@
+# Copyright Broadcom, Inc. All Rights Reserved.
+# SPDX-License-Identifier: APACHE-2.0
+version: '3.9'
+
+services:
+    postgresql-master:
+      image: docker.io/bitnami/postgresql:17
+      ports:
+        - '5432:5432'
+      volumes:
+        - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
+        - './postgresql_master_data:/bitnami/postgresql'
+      environment:
+        - POSTGRESQL_REPLICATION_MODE=master
+        - POSTGRESQL_REPLICATION_USER=repl_user
+        - POSTGRESQL_REPLICATION_PASSWORD=repl_password
+        - POSTGRESQL_USERNAME=postgres
+        - POSTGRESQL_PASSWORD=my_password
+        - POSTGRESQL_DATABASE=location
+        - ALLOW_EMPTY_PASSWORD=no
+    postgresql-slave:
+      image: docker.io/bitnami/postgresql:17
+      ports:
+        - '5433:5432'
+      depends_on:
+        - postgresql-master
+      volumes:
+        - './postgresql_slave_data:/bitnami/postgresql'
+      environment:
+        - POSTGRESQL_REPLICATION_MODE=slave
+        - POSTGRESQL_REPLICATION_USER=repl_user
+        - POSTGRESQL_REPLICATION_PASSWORD=repl_password
+        - POSTGRESQL_MASTER_HOST=postgresql-master
+        - POSTGRESQL_PASSWORD=my_password
+        - POSTGRESQL_MASTER_PORT_NUMBER=5432
+        - ALLOW_EMPTY_PASSWORD=no

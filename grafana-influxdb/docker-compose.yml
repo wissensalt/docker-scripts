@@ -35,6 +35,8 @@ services:
       - grafana-storage:/var/lib/grafana
     depends_on:
       - influxdb
+    links:
+      - influxdb
 volumes:
   influxdb-storage:
   chronograf-storage:

@@ -1,0 +1,45 @@
+<configuration scan="true">
+    <property resource="application.properties" />
+
+    <appender name="AUDITLOGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/var/log/app/audit.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- hourly rollover -->
+            <fileNamePattern>/var/log/app/audit_%d{yyyy-MM-dd_HH}.log</fileNamePattern>
+            <!-- keep logs for 1 hour -->
+            <maxHistory>1</maxHistory>
+            <!-- delete logs older than 1 hour -->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+		<!--  DEFAULT Console Appender  -->
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="STDOUT">
+				<encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+    </appender>
+
+    
+		<!--  DEFAULT Console Slog Appender  -->
+    <appender name="SLOG_APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="com.tix.member.core.v2.libraries.log.JsonFormatLog" />
+    </appender>
+    <logger name="com.tix.member.core.v2.aop.SlogAspect" level="INFO" additivity="false">
+        <appender-ref ref="SLOG_APPENDER" />
+    </logger>
+
+
+    <logger name="com.tix.member.core.v2.component.auditlog.AuditEventListener" level="INFO" additivity="false">
+        <appender-ref ref="AUDITLOGFILE" />
+    </logger>
+
+    <logger additivity="false" level="INFO" name="com.tix.member.core.v2">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+		<root additivity="false" level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
