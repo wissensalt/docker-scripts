@@ -1,0 +1,28 @@
+# Environment files
+.env
+
+# Data directories (if mounted locally)
+data/
+postgres_data/
+sonarqube_data/
+sonarqube_extensions/
+sonarqube_logs/
+
+# Backups
+*.sql
+*.tar.gz
+backup/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
