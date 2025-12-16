@@ -1,14 +1,12 @@
-version: '3.8'
+version: "3.8"
 services:
   mongodb-server:
-    build: .
-    image: mongodb-server
+    image: mongo:8.2.2
     container_name: mongodb-server
-    volumes: 
+    volumes:
       - ./data:/data/db
     ports:
       - 27017:27017
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password
-      

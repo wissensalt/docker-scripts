@@ -6,7 +6,7 @@ db.createUser(
     {
         user: "user",
         pwd: "password",
-        roles: [ { role: "readWrite", db: "tix_member_external"} ],
+        roles: [{ role: "readWrite", db: "tix_member_external" }],
         passwordDigestor: "server",
     }
 )
