@@ -5,7 +5,7 @@ services:
     image: mongodb-server
     container_name: mongodb-server
     volumes: 
-      - ~/docker-volumes/mongodb/data:/data/db
+      - ./data:/data/db
     ports:
       - 27017:27017
     environment:
