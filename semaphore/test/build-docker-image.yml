@@ -1,0 +1,33 @@
+---
+- name: Build Docker image
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Checkout repository
+      ansible.builtin.git:
+        repo: https://github.com/wissensalt/spring-security-session-redis.git
+        dest: /tmp/repositories/spring-security-session-redis
+
+    - name: Change directory
+      ansible.builtin.shell:
+        cmd: cd /tmp/repositories/spring-security-session-redis
+
+    - name: Build Docker image
+      ansible.builtin.command:
+        cmd: docker build -t spring-security-session-redis:latest .
+      register: build_output
+
+    - name: Show build output
+      ansible.builtin.debug:
+        var: build_output.stdout_lines
+
+    - name: Delete Docker image
+      ansible.builtin.command:
+        cmd: docker rmi spring-security-session-redis:latest
+      register: delete_output
+
+    - name: Show delete output
+      ansible.builtin.debug:
+        var: delete_output.stdout_lines

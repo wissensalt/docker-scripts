@@ -1,7 +1,6 @@
 ---
 - name: Deploy application using Docker Compose
-  hosts: localhost
-  connection: local
+  hosts: exp
   gather_facts: false
   vars:
     docker_daemon: tcp://dind:2375
@@ -13,7 +12,6 @@
       ansible.builtin.copy:
         dest: "{{ compose_file_path }}"
         content: |
-          version: '3.8'
           services:
             web:
               image: nginx:alpine
@@ -30,7 +28,7 @@
 
     - name: Deploy with Docker Compose
       ansible.builtin.command:
-        cmd: docker compose -f {{ compose_file_path }} -p {{ compose_project_name }} up -d
+        cmd: docker compose -f {{ compose_file_path }} up -d
       environment:
         DOCKER_HOST: "{{ docker_daemon }}"
       register: compose_output
