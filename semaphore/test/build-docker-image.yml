@@ -14,6 +14,15 @@
       ansible.builtin.shell:
         cmd: cd /tmp/repositories/spring-security-session-redis
 
+    - name: Show directory
+      ansible.builtin.shell:
+        cmd: pwd
+      register: directory_output
+
+    - name: Show directory output
+      ansible.builtin.debug:
+        var: directory_output.stdout
+
     - name: Build Docker image
       ansible.builtin.command:
         cmd: docker build -t spring-security-session-redis:latest .
