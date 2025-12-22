@@ -1,0 +1,51 @@
+---
+- name: Deploy application using Docker Compose
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    docker_daemon: tcp://dind:2375
+    compose_project_name: myapp
+    compose_file_path: /tmp/docker-compose.yml
+
+  tasks:
+    - name: Create docker-compose.yml file
+      ansible.builtin.copy:
+        dest: "{{ compose_file_path }}"
+        content: |
+          version: '3.8'
+          services:
+            web:
+              image: nginx:alpine
+              ports:
+                - "8080:80"
+              environment:
+                - NGINX_HOST=localhost
+                - NGINX_PORT=80
+            
+            redis:
+              image: redis:alpine
+              ports:
+                - "6379:6379"
+
+    - name: Deploy with Docker Compose
+      ansible.builtin.command:
+        cmd: docker compose -f {{ compose_file_path }} -p {{ compose_project_name }} up -d
+      environment:
+        DOCKER_HOST: "{{ docker_daemon }}"
+      register: compose_output
+
+    - name: Show deployment output
+      ansible.builtin.debug:
+        var: compose_output.stdout_lines
+
+    - name: List running containers
+      ansible.builtin.shell:
+        cmd: docker ps --format "{% raw %}table {{.Names}}\t{{.Image}}\t{{.Status}}{% endraw %}"
+      environment:
+        DOCKER_HOST: "{{ docker_daemon }}"
+      register: containers_list
+
+    - name: Show running containers
+      ansible.builtin.debug:
+        var: containers_list.stdout_lines

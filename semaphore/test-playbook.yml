@@ -1,0 +1,18 @@
+---
+- name: Basic playbook to say hello
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Print a message
+      ansible.builtin.debug:
+        msg: "Hello, World! Updated"
+    - name: Run Hello World Docker container
+      community.docker.docker_container:
+        name: hello-world
+        image: hello-world:latest
+        state: started
+        detach: false
+        cleanup: true
+        docker_host: tcp://dind:2375
