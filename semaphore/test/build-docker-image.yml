@@ -15,22 +15,33 @@
         repo: https://github.com/wissensalt/spring-security-session-redis.git
         dest: /tmp/repositories/spring-security-session-redis
 
+    - name: Build Maven project
+      ansible.builtin.command:
+        cmd: mvn clean package
+      args:
+        chdir: /tmp/repositories/spring-security-session-redis
+      register: maven_build_output
+
+    - name: Show Maven build output
+      ansible.builtin.debug:
+        var: maven_build_output.stdout_lines
+
     - name: Build Docker image
       ansible.builtin.command:
         cmd: docker build -t spring-security-session-redis:latest .
       args:
         chdir: /tmp/repositories/spring-security-session-redis
-      register: build_output
+      register: docker_build_output
 
-    - name: Show build output
+    - name: Show Docker build output
       ansible.builtin.debug:
-        var: build_output.stdout_lines
+        var: docker_build_output.stdout_lines
 
     - name: Delete Docker image
       ansible.builtin.command:
         cmd: docker rmi spring-security-session-redis:latest
-      register: delete_output
+      register: docker_delete_output
 
-    - name: Show delete output
+    - name: Show Docker delete output
       ansible.builtin.debug:
-        var: delete_output.stdout_lines
+        var: docker_delete_output.stdout_lines

@@ -12,6 +12,9 @@ RUN pip3 install --no-cache-dir docker --break-system-packages
 # Install Ansible Docker collection
 RUN ansible-galaxy collection install community.docker community.general
 
+# Install Maven
+RUN apk add --no-cache maven
+
 # Verify installations
 RUN docker --version && \
     docker compose version && \
