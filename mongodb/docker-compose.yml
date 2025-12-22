@@ -5,8 +5,10 @@ services:
     container_name: mongodb-server
     volumes:
       - ./data:/data/db
+      - ./mongo-entrypoint:/docker-entrypoint-initdb.d
     ports:
       - 27017:27017
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=admin
