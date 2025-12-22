@@ -3,6 +3,11 @@
   hosts: localhost
   connection: local
   gather_facts: false
+  vars:
+    docker_daemon: tcp://dind:2375
+
+  environment:
+    DOCKER_HOST: "{{ docker_daemon }}"
 
   tasks:
     - name: Checkout repository
