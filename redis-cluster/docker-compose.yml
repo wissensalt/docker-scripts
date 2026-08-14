@@ -1,36 +1,43 @@
-version: '3.8'
-
 services:
   redis-1:
     image: redis:7.2-alpine
-    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+    command: sh /usr/local/bin/redis-entrypoint.sh
     volumes:
       - ./redis-1.conf:/usr/local/etc/redis/redis.conf
-      - redis-1-data:/data
+      - ./redis-entrypoint.sh:/usr/local/bin/redis-entrypoint.sh
+      - ./redis-1-data:/data
     ports:
       - "6379:6379"
+      - "16379:16379"
     networks:
       - redis-cluster-net
 
   redis-2:
     image: redis:7.2-alpine
-    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+    command: sh /usr/local/bin/redis-entrypoint.sh
     volumes:
       - ./redis-2.conf:/usr/local/etc/redis/redis.conf
-      - redis-2-data:/data
+      - ./redis-entrypoint.sh:/usr/local/bin/redis-entrypoint.sh
+      - ./redis-2-data:/data
     ports:
-      - "6380:6379"
+      - "6380:6380"
+      - "16380:16380"
     networks:
       - redis-cluster-net
 
   redis-3:
     image: redis:7.2-alpine
-    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+    command: sh /usr/local/bin/redis-entrypoint.sh
     volumes:
       - ./redis-3.conf:/usr/local/etc/redis/redis.conf
-      - redis-3-data:/data
+      - ./redis-entrypoint.sh:/usr/local/bin/redis-entrypoint.sh
+      - ./redis-3-data:/data
     ports:
-      - "6381:6379"
+      - "6381:6381"
+      - "16381:16381"
     networks:
       - redis-cluster-net
 

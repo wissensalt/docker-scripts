@@ -1,11 +1,54 @@
 #!/bin/sh
-# Wait for Redis nodes to be ready
-sleep 20
+set -e
 
-# Create Redis cluster
-redis-cli --cluster create \
-  redis-1:6379 \
-  redis-2:6379 \
-  redis-3:6379 \
-  --cluster-replicas 0 \
-  --cluster-yes
+REDIS_PASSWORD="password"
+NODES="redis-1:6379 redis-2:6380 redis-3:6381"
+
+wait_for_node() {
+  host="$1"
+  port="$2"
+  until redis-cli -h "$host" -p "$port" -a "$REDIS_PASSWORD" ping 2>/dev/null | grep -q PONG; do
+    echo "Waiting for $host:$port..."
+    sleep 2
+  done
+}
+
+apply_announce() {
+  host="$1"
+  port="$2"
+  announce_ip="$3"
+  announce_port="$4"
+  announce_bus_port="$5"
+
+  redis-cli -h "$host" -p "$port" -a "$REDIS_PASSWORD" CONFIG SET cluster-announce-ip "$announce_ip" >/dev/null
+  redis-cli -h "$host" -p "$port" -a "$REDIS_PASSWORD" CONFIG SET cluster-announce-port "$announce_port" >/dev/null
+  redis-cli -h "$host" -p "$port" -a "$REDIS_PASSWORD" CONFIG SET cluster-announce-bus-port "$announce_bus_port" >/dev/null
+}
+
+for node in $NODES; do
+  host="${node%%:*}"
+  port="${node##*:}"
+  wait_for_node "$host" "$port"
+done
+
+if redis-cli -h redis-1 -p 6379 -a "$REDIS_PASSWORD" cluster info 2>/dev/null | grep -q "cluster_state:ok"; then
+  echo "Cluster already exists and is healthy."
+else
+  echo "Creating Redis cluster..."
+  redis-cli -a "$REDIS_PASSWORD" --cluster create \
+    $NODES \
+    --cluster-replicas 0 \
+    --cluster-yes
+fi
+
+echo "Applying host announce settings..."
+apply_announce redis-1 6379 127.0.0.1 6379 16379
+apply_announce redis-2 6380 127.0.0.1 6380 16380
+apply_announce redis-3 6381 127.0.0.1 6381 16381
+
+until redis-cli -h redis-1 -p 6379 -a "$REDIS_PASSWORD" cluster info 2>/dev/null | grep -q "cluster_state:ok"; do
+  echo "Waiting for cluster to become healthy..."
+  sleep 2
+done
+
+echo "Cluster is ready for host connections."
