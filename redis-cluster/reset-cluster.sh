@@ -4,16 +4,43 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR"
 
-if command -v docker >/dev/null 2>&1; then
+if docker compose version >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
   COMPOSE="docker compose"
+elif podman compose version >/dev/null 2>&1; then
+  COMPOSE="podman compose"
 elif [ -x /usr/local/bin/docker-compose ]; then
   COMPOSE="/usr/local/bin/docker-compose"
-elif command -v podman >/dev/null 2>&1; then
-  COMPOSE="podman compose"
 else
   echo "Docker Compose not found. Install Docker or Podman compose."
   exit 1
 fi
+
+detect_announce_ip() {
+  if [ -n "$CLUSTER_ANNOUNCE_IP" ]; then
+    echo "$CLUSTER_ANNOUNCE_IP"
+    return
+  fi
+
+  if command -v ipconfig >/dev/null 2>&1; then
+    ipconfig getifaddr en0 2>/dev/null && return
+    ipconfig getifaddr en1 2>/dev/null && return
+  fi
+
+  if command -v hostname >/dev/null 2>&1; then
+    lan_ip="$(hostname -I 2>/dev/null | awk '{print $1}')"
+    if [ -n "$lan_ip" ]; then
+      echo "$lan_ip"
+      return
+    fi
+  fi
+
+  echo "127.0.0.1"
+}
+
+CLUSTER_ANNOUNCE_IP="$(detect_announce_ip)"
+export CLUSTER_ANNOUNCE_IP
+printf 'CLUSTER_ANNOUNCE_IP=%s\n' "$CLUSTER_ANNOUNCE_IP" > .env
+echo "Using cluster announce IP $CLUSTER_ANNOUNCE_IP (host-reachable; written to .env)"
 
 echo "Stopping Redis cluster..."
 $COMPOSE down

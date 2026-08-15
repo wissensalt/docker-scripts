@@ -35,7 +35,9 @@ When a cluster client connects to `127.0.0.1:6379`, Redis responds with slot own
 This repository solves that with a two-phase startup:
 
 1. **Bootstrap** — nodes start without announce settings and form a cluster on the Docker network.
-2. **Announce** — `cluster-init` applies `127.0.0.1` announce settings at runtime via `CONFIG SET`, so host clients receive reachable addresses without breaking inter-node gossip.
+2. **Announce** — `cluster-init` applies a **host-reachable announce IP** at runtime via `CONFIG SET`. That IP must also be reachable from the containers (typically your LAN address, such as `192.168.x.x`), so gossip still works.
+
+`127.0.0.1` is not used as the announce IP: from inside a container it points at the container itself, so nodes mark each other as failed. `./reset-cluster.sh` writes the detected LAN IP to `.env` as `CLUSTER_ANNOUNCE_IP`.
 
 On subsequent container restarts, `redis-entrypoint.sh` repeats the same pattern: start without announce, then apply announce settings once the node is up.
 
@@ -48,10 +50,7 @@ On subsequent container restarts, `redis-entrypoint.sh` repeats the same pattern
 ## Quick start
 
 ```bash
-# Start the cluster
-docker compose up -d
-
-# Or reset from a clean state (recommended after config changes)
+# Recommended: detect a host-reachable announce IP, wipe stale state, and start
 ./reset-cluster.sh
 ```
 
@@ -66,7 +65,7 @@ redis-cli -c -a password -h 127.0.0.1 -p 6379 GET foo
 Expected:
 
 - `cluster_state:ok`
-- `CLUSTER SLOTS` lists `127.0.0.1:6379`, `127.0.0.1:6380`, and `127.0.0.1:6381`
+- `CLUSTER SLOTS` lists your host LAN IP on ports `6379`, `6380`, and `6381` (not Docker/Podman bridge IPs such as `10.89.x.x`)
 - `SET` / `GET` succeed from the host
 
 ## Connection details
@@ -133,11 +132,16 @@ redis-cluster/
 
 ### Changing announce address
 
-By default, nodes announce `127.0.0.1` for host-local development. To expose the cluster to other machines on your LAN:
+`./reset-cluster.sh` detects a LAN address and saves it as `CLUSTER_ANNOUNCE_IP` in `.env`. Docker Compose passes that value into every node and the init container.
 
-1. Set `cluster-announce-ip` in each `redis-*.conf` to your host's LAN IP.
-2. Update the matching values in `cluster-init.sh` (`apply_announce` calls).
-3. Run `./reset-cluster.sh`.
+To set it yourself:
+
+```bash
+echo 'CLUSTER_ANNOUNCE_IP=192.168.1.4' > .env
+./reset-cluster.sh
+```
+
+Use an address that **both** the host and the containers can open the published Redis ports on. `127.0.0.1` fails inter-node gossip. Docker/Podman bridge IPs (`10.x`, `172.x`) fail host clients (`MOVED` timeouts).
 
 ### Node settings
 
@@ -250,13 +254,16 @@ This usually happens when `redis-*-data/` contains a cluster formed with old Doc
 
 ### `MOVED` redirects to `10.x.x.x` or another unreachable IP
 
-Announce settings were not applied. Check init logs:
+The cluster is advertising Docker/Podman bridge IPs. Host `redis-cli -c` follows `MOVED` to those addresses and times out (Podman on macOS cannot reach `10.89.x.x` from the host).
+
+Reset with a host-reachable announce IP:
 
 ```bash
-docker compose logs redis-cluster-init
+./reset-cluster.sh
+redis-cli -a password -h 127.0.0.1 -p 6379 CLUSTER SLOTS
 ```
 
-You should see `Applying host announce settings...` followed by `Cluster is ready for host connections.` If not, run `./reset-cluster.sh`.
+You should see `Applying host announce settings (<your-lan-ip>)...` in `docker compose logs redis-cluster-init`, and `CLUSTER SLOTS` should list that LAN IP — not `10.x` or `172.x`.
 
 ### `NOAUTH Authentication required`
 
@@ -311,7 +318,7 @@ Do not expose this setup to untrusted networks or use it in production without h
 - **3 masters, no replicas** — losing a node loses its slot range until it is restored.
 - **No automatic resharding** — adding or removing nodes requires manual `redis-cli --cluster` operations.
 - **Announce settings are runtime-applied** — they are not persisted to disk via `CONFIG REWRITE` because config files are mounted read-only. The entrypoint and init scripts re-apply them on every start.
-- **Single-host focused** — `127.0.0.1` announce works for apps on the same machine. Remote clients need a reachable announce IP.
+- **Single-host / LAN focused** — nodes announce a host LAN IP so apps on the same machine (and other devices on that LAN) can follow cluster redirects. Rebuild `.env` with `./reset-cluster.sh` if your DHCP address changes.
 
 ## License
 

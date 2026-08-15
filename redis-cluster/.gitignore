@@ -1,3 +1,4 @@
 redis-1-data/
 redis-2-data/
 redis-3-data/
+.env

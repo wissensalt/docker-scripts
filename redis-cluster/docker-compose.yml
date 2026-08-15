@@ -1,8 +1,13 @@
+x-announce-env: &announce-env
+  CLUSTER_ANNOUNCE_IP: ${CLUSTER_ANNOUNCE_IP:-127.0.0.1}
+
 services:
   redis-1:
     image: redis:7.2-alpine
     restart: unless-stopped
     command: sh /usr/local/bin/redis-entrypoint.sh
+    environment:
+      <<: *announce-env
     volumes:
       - ./redis-1.conf:/usr/local/etc/redis/redis.conf
       - ./redis-entrypoint.sh:/usr/local/bin/redis-entrypoint.sh
@@ -17,6 +22,8 @@ services:
     image: redis:7.2-alpine
     restart: unless-stopped
     command: sh /usr/local/bin/redis-entrypoint.sh
+    environment:
+      <<: *announce-env
     volumes:
       - ./redis-2.conf:/usr/local/etc/redis/redis.conf
       - ./redis-entrypoint.sh:/usr/local/bin/redis-entrypoint.sh
@@ -31,6 +38,8 @@ services:
     image: redis:7.2-alpine
     restart: unless-stopped
     command: sh /usr/local/bin/redis-entrypoint.sh
+    environment:
+      <<: *announce-env
     volumes:
       - ./redis-3.conf:/usr/local/etc/redis/redis.conf
       - ./redis-entrypoint.sh:/usr/local/bin/redis-entrypoint.sh
@@ -47,6 +56,8 @@ services:
       - redis-1
       - redis-2
       - redis-3
+    environment:
+      <<: *announce-env
     volumes:
       - ./cluster-init.sh:/cluster-init.sh
     entrypoint: sh /cluster-init.sh

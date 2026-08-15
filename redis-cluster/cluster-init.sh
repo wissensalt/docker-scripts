@@ -3,6 +3,7 @@ set -e
 
 REDIS_PASSWORD="password"
 NODES="redis-1:6379 redis-2:6380 redis-3:6381"
+ANNOUNCE_IP="${CLUSTER_ANNOUNCE_IP:-127.0.0.1}"
 
 wait_for_node() {
   host="$1"
@@ -41,10 +42,10 @@ else
     --cluster-yes
 fi
 
-echo "Applying host announce settings..."
-apply_announce redis-1 6379 127.0.0.1 6379 16379
-apply_announce redis-2 6380 127.0.0.1 6380 16380
-apply_announce redis-3 6381 127.0.0.1 6381 16381
+echo "Applying host announce settings ($ANNOUNCE_IP)..."
+apply_announce redis-1 6379 "$ANNOUNCE_IP" 6379 16379
+apply_announce redis-2 6380 "$ANNOUNCE_IP" 6380 16380
+apply_announce redis-3 6381 "$ANNOUNCE_IP" 6381 16381
 
 until redis-cli -h redis-1 -p 6379 -a "$REDIS_PASSWORD" cluster info 2>/dev/null | grep -q "cluster_state:ok"; do
   echo "Waiting for cluster to become healthy..."

@@ -4,6 +4,8 @@ set -e
 CONF="/usr/local/etc/redis/redis.conf"
 DATA="/data"
 BOOTSTRAP_CONF="/tmp/redis.bootstrap.conf"
+PORT="$(awk '/^port / {print $2}' "$CONF")"
+PASSWORD="$(awk '/^requirepass/ {print $2}' "$CONF")"
 NODES_FILE="$(awk '/^cluster-config-file/ {print $2}' "$CONF")"
 NODES_PATH="$DATA/$NODES_FILE"
 
@@ -17,7 +19,7 @@ cluster_formed() {
 }
 
 apply_announce_settings() {
-  announce_ip="$(awk '/^cluster-announce-ip/ {print $2}' "$CONF")"
+  announce_ip="${CLUSTER_ANNOUNCE_IP:-$(awk '/^cluster-announce-ip/ {print $2}' "$CONF")}"
   announce_port="$(awk '/^cluster-announce-port/ {print $2}' "$CONF")"
   announce_bus_port="$(awk '/^cluster-announce-bus-port/ {print $2}' "$CONF")"
 
@@ -26,10 +28,10 @@ apply_announce_settings() {
   fi
 
   echo "Applying host announce settings for clients."
-  redis-cli -a "$(awk '/^requirepass/ {print $2}' "$CONF")" CONFIG SET cluster-announce-ip "$announce_ip" >/dev/null
-  redis-cli -a "$(awk '/^requirepass/ {print $2}' "$CONF")" CONFIG SET cluster-announce-port "$announce_port" >/dev/null
+  redis-cli -h 127.0.0.1 -p "$PORT" -a "$PASSWORD" CONFIG SET cluster-announce-ip "$announce_ip" >/dev/null
+  redis-cli -h 127.0.0.1 -p "$PORT" -a "$PASSWORD" CONFIG SET cluster-announce-port "$announce_port" >/dev/null
   if [ -n "$announce_bus_port" ]; then
-    redis-cli -a "$(awk '/^requirepass/ {print $2}' "$CONF")" CONFIG SET cluster-announce-bus-port "$announce_bus_port" >/dev/null
+    redis-cli -h 127.0.0.1 -p "$PORT" -a "$PASSWORD" CONFIG SET cluster-announce-bus-port "$announce_bus_port" >/dev/null
   fi
 }
 
@@ -44,7 +46,7 @@ echo "Cluster detected; starting and applying host announce settings."
 redis-server "$BOOTSTRAP_CONF" &
 server_pid=$!
 
-until redis-cli -a "$(awk '/^requirepass/ {print $2}' "$CONF")" ping 2>/dev/null | grep -q PONG; do
+until redis-cli -h 127.0.0.1 -p "$PORT" -a "$PASSWORD" ping 2>/dev/null | grep -q PONG; do
   sleep 1
 done
 
