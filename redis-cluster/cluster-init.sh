@@ -26,14 +26,20 @@ apply_announce() {
   redis-cli -h "$host" -p "$port" -a "$REDIS_PASSWORD" CONFIG SET cluster-announce-bus-port "$announce_bus_port" >/dev/null
 }
 
+cluster_already_formed() {
+  known="$(redis-cli -h redis-1 -p 6379 -a "$REDIS_PASSWORD" cluster info 2>/dev/null \
+    | awk -F: '/^cluster_known_nodes:/ { gsub("\r", "", $2); print $2 }')"
+  [ "${known:-0}" -ge 3 ]
+}
+
 for node in $NODES; do
   host="${node%%:*}"
   port="${node##*:}"
   wait_for_node "$host" "$port"
 done
 
-if redis-cli -h redis-1 -p 6379 -a "$REDIS_PASSWORD" cluster info 2>/dev/null | grep -q "cluster_state:ok"; then
-  echo "Cluster already exists and is healthy."
+if cluster_already_formed; then
+  echo "Cluster membership already exists; skipping create."
 else
   echo "Creating Redis cluster..."
   redis-cli -a "$REDIS_PASSWORD" --cluster create \
