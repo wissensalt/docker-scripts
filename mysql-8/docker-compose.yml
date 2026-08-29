@@ -1,6 +1,6 @@
 services:
-  mysql:
-    container_name: mysql
+  mysql8:
+    container_name: mysql-8
     image: mysql:8
     env_file:
       - database.env  
